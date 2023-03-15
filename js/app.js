@@ -1,19 +1,48 @@
 // variables
+const form = document.querySelector('#request-quote')
+
+
 
 // eventlisteners
+eventlisteners()
+function eventlisteners() {
 
+// make options tag for select
 document.addEventListener("DOMContentLoaded", function () {
   // display the options
   const html = new HTMLUI();
   html.displayYears();
 });
 
-// objects
 
+
+// submit form  when click
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  // read value from the form
+  const make = document.getElementById('make').value
+  const year = document.getElementById('year').value
+  const level = document.querySelector('input[name="level"]:checked').value
+
+
+  console.log(level)
+
+})
+}
+
+
+
+
+
+
+
+
+
+// objects
 function HTMLUI() {}
 
 // display years
-
 HTMLUI.prototype.displayYears = function () {
   let persianNumbers = [
       /۰/g,
@@ -52,8 +81,38 @@ HTMLUI.prototype.displayYears = function () {
   const now = new Date().toLocaleDateString("fa-IR")
 
   let nowYear = now.slice(0,4)
-    nowYear = fixNumbers(nowYear)
-    
+
+  let max = fixNumbers(nowYear)
+  
+  // min year
+  let min = max - 20
+
+  // access to the select tag
+  const selectYear = document.querySelector('#year')
+  
+  // create for loop for making options tag
+  for (let i = max; i >= min; i--) {
+    // create options 
+    const options = document.createElement('option')
+    options.value = i
+    options.innerText = i
+
+    // append options to selectYear
+    selectYear.appendChild(options)
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 };
 
