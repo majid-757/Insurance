@@ -1,6 +1,6 @@
 // variables
 const form = document.querySelector('#request-quote')
-
+const html = new HTMLUI();
 
 
 // eventlisteners
@@ -8,9 +8,9 @@ eventlisteners()
 function eventlisteners() {
 
 // make options tag for select
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
   // display the options
-  const html = new HTMLUI();
+  
   html.displayYears();
 });
 
@@ -25,16 +25,15 @@ form.addEventListener("submit", function (e) {
   const year = document.getElementById('year').value
   const level = document.querySelector('input[name="level"]:checked').value
 
-
-  console.log(level)
+  // check the value of fields are correct
+  if (make === '' || year === '' || level === '') {
+    html.displayErorr()
+  } else {
+    console.log('all')
+  }
 
 })
 }
-
-
-
-
-
 
 
 
@@ -103,17 +102,12 @@ HTMLUI.prototype.displayYears = function () {
 
   }
 
-
-
-
-
-
-
-
-
-
-
-
 };
 
 
+
+// display error on the from 
+
+HTMLUI.prototype.displayErorr = function() {
+  
+}
