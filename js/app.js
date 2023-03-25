@@ -27,7 +27,7 @@ form.addEventListener("submit", function (e) {
 
   // check the value of fields are correct
   if (make === '' || year === '' || level === '') {
-    html.displayErorr()
+    html.displayErorr('لطفا همه مقادیر به درستی وارد شود')
   } else {
     console.log('all')
   }
@@ -108,6 +108,25 @@ HTMLUI.prototype.displayYears = function () {
 
 // display error on the from 
 
-HTMLUI.prototype.displayErorr = function() {
+HTMLUI.prototype.displayErorr = function(err) {
   
+  const div = document.createElement('div')
+  div.classList = 'error'
+  div.innerText = err
+
+  // insert div to the form
+  form.insertBefore(div, document.querySelector('.form-group'))
+  
+  // remove error after 3second
+  setTimeout(() => {
+    document.querySelector('.error').remove()
+  }, 3000);
+
+
+
 }
+
+
+
+
+
