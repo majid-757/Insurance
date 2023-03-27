@@ -1,6 +1,7 @@
 // variables
 const form = document.querySelector('#request-quote')
 const html = new HTMLUI();
+const insurance = new Insurance()
 
 
 // eventlisteners
@@ -29,7 +30,8 @@ form.addEventListener("submit", function (e) {
   if (make === '' || year === '' || level === '') {
     html.displayErorr('لطفا همه مقادیر به درستی وارد شود')
   } else {
-    console.log('all')
+    const insurance = new Insurance(make, year, level)
+    const price = insurance.calculatePrice(insurance)
   }
 
 })
@@ -39,6 +41,42 @@ form.addEventListener("submit", function (e) {
 
 
 // objects
+// every thing related to the insurance 
+function Insurance(make, year, level) {
+  this.make = make
+  this.year = year
+  this.level = level
+
+}
+
+// calculating the price 
+Insurance.prototype.calculatePrice = function(info) {
+  let price;
+  let base = 2000000
+  // get the make 
+  const make = info.make
+
+  // make:1 ===> pride make:2 ===> optima make:3 ===> porches
+
+  switch (make) {
+    case '1':
+      price = base * 1.15
+      break;
+    case '2':
+      price = base * 1.30
+      break;
+    case '3':
+      price = base * 1.80
+      break;
+  }
+  console.log(price)
+  return price;
+
+
+}
+
+
+// everything related to the html
 function HTMLUI() {}
 
 // display years
