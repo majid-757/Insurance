@@ -1,79 +1,151 @@
 // variables
-const form = document.querySelector('#request-quote')
+const form = document.querySelector("#request-quote");
 const html = new HTMLUI();
-const insurance = new Insurance()
-
+const insurance = new Insurance();
 
 // eventlisteners
-eventlisteners()
+eventlisteners();
 function eventlisteners() {
+  // make options tag for select
+  document.addEventListener("DOMContentLoaded", function () {
+    // display the options
 
-// make options tag for select
-document.addEventListener("DOMContentLoaded", function() {
-  // display the options
-  
-  html.displayYears();
-});
+    html.displayYears();
+  });
 
+  // submit form  when click
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
+    // read value from the form
+    const make = document.getElementById("make").value;
+    const year = document.getElementById("year").value;
+    const level = document.querySelector('input[name="level"]:checked').value;
 
-// submit form  when click
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+    // check the value of fields are correct
+    if (make === "" || year === "" || level === "") {
+      html.displayErorr("لطفا همه مقادیر به درستی وارد شود");
+    } else {
+      const insurance = new Insurance(make, year, level);
+      const price = insurance.calculatePrice(insurance);
+      html.showResult(price, insurance)
 
-  // read value from the form
-  const make = document.getElementById('make').value
-  const year = document.getElementById('year').value
-  const level = document.querySelector('input[name="level"]:checked').value
-
-  // check the value of fields are correct
-  if (make === '' || year === '' || level === '') {
-    html.displayErorr('لطفا همه مقادیر به درستی وارد شود')
-  } else {
-    const insurance = new Insurance(make, year, level)
-    const price = insurance.calculatePrice(insurance)
-  }
-
-})
+    }
+  });
 }
-
-
-
 
 // objects
-// every thing related to the insurance 
+// every thing related to the insurance
 function Insurance(make, year, level) {
-  this.make = make
-  this.year = year
-  this.level = level
-
+  this.make = make;
+  this.year = year;
+  this.level = level;
 }
 
-// calculating the price 
-Insurance.prototype.calculatePrice = function(info) {
+// calculating the price
+Insurance.prototype.calculatePrice = function (info) {
   let price;
-  let base = 2000000
-  // get the make 
-  const make = info.make
+  let base = 2000000;
+  // get the make
+  const make = info.make;
 
   // make:1 ===> pride make:2 ===> optima make:3 ===> porches
 
   switch (make) {
-    case '1':
-      price = base * 1.15
+    case "1":
+      price = base * 1.15;
       break;
-    case '2':
-      price = base * 1.30
+    case "2":
+      price = base * 1.3;
       break;
-    case '3':
-      price = base * 1.80
+    case "3":
+      price = base * 1.8;
       break;
   }
-  console.log(price)
-  return price;
+  
+
+  // get the year
+  const year = info.year;
+  const diffrence = this.getYearDiffrence(year);
+  
+  // 3% cheaper for each year 
+  price = price - (((diffrence * 3)/100)*price)
 
 
-}
+  // get the level 
+  const level = info.level
+  price = this.calculateLevel(level, price)
+
+  return price
+};
+
+//
+Insurance.prototype.getYearDiffrence = function (year) {
+  let persianNumbers = [
+      /۰/g,
+      /۱/g,
+      /۲/g,
+      /۳/g,
+      /۴/g,
+      /۵/g,
+      /۶/g,
+      /۷/g,
+      /۸/g,
+      /۹/g,
+    ],
+    arabicNumbers = [
+      /٠/g,
+      /١/g,
+      /٢/g,
+      /٣/g,
+      /٤/g,
+      /٥/g,
+      /٦/g,
+      /٧/g,
+      /٨/g,
+      /٩/g,
+    ],
+    fixNumbers = function (str) {
+      if (typeof str === "string") {
+        for (var i = 0; i < 10; i++) {
+          str = str.replace(persianNumbers[i], i).replace(arabicNumbers[i], i);
+        }
+      }
+      return str;
+    };
+
+  // get max year
+  const now = new Date().toLocaleDateString("fa-IR");
+
+  let nowYear = now.slice(0, 4);
+
+  let max = fixNumbers(nowYear);
+
+  year = max - year;
+
+  return year
+
+
+};
+
+Insurance.prototype.calculateLevel = function(level, price) {
+  /*
+  basic ===> insurance 30%
+  complate ===> insurance 50%
+  */
+
+  if (level == 'basic') {
+    price = price * 1.30
+  } else {
+    price = price * 1.50
+  }
+
+  return price
+
+};
+
+
+
 
 
 // everything related to the html
@@ -115,56 +187,98 @@ HTMLUI.prototype.displayYears = function () {
     };
 
   // get max year
-  const now = new Date().toLocaleDateString("fa-IR")
+  const now = new Date().toLocaleDateString("fa-IR");
 
-  let nowYear = now.slice(0,4)
+  let nowYear = now.slice(0, 4);
 
-  let max = fixNumbers(nowYear)
-  
+  let max = fixNumbers(nowYear);
+
   // min year
-  let min = max - 20
+  let min = max - 20;
 
   // access to the select tag
-  const selectYear = document.querySelector('#year')
-  
+  const selectYear = document.querySelector("#year");
+
   // create for loop for making options tag
   for (let i = max; i >= min; i--) {
-    // create options 
-    const options = document.createElement('option')
-    options.value = i
-    options.innerText = i
+    // create options
+    const options = document.createElement("option");
+    options.value = i;
+    options.innerText = i;
 
     // append options to selectYear
-    selectYear.appendChild(options)
-
-
+    selectYear.appendChild(options);
   }
+};
 
+// display error on the from
+
+HTMLUI.prototype.displayErorr = function (err) {
+  const div = document.createElement("div");
+  div.classList = "error";
+  div.innerText = err;
+
+  // insert div to the form
+  form.insertBefore(div, document.querySelector(".form-group"));
+
+  // remove error after 3second
+  setTimeout(() => {
+    document.querySelector(".error").remove();
+  }, 3000);
 };
 
 
 
-// display error on the from 
+// display factor to the form
+HTMLUI.prototype.showResult = function(price, info) {
+  // access to the div
+  const result = document.querySelector("#result");
 
-HTMLUI.prototype.displayErorr = function(err) {
+  // create div for showing price 
+  const div = document.createElement("div");
+
+  // get the make
+  let make = info.make;
+
+  // convert make value 
+  switch (make) {
+    case "1":
+      make = 'پراید'
+      break;
+    case "2":
+      make = 'پورشه'
+      break;
+    case "3":
+      make = 'اپتیما'
+      break;
+  }
+
+
+  // convert level to the persian
+  let level = info.level;
+
+  if (level == 'basic') {
+    level = 'ساده'
+  } else {
+    level = 'کامل'
+  }
+
+
+  div.innerHTML = `
+  <p class="header">خلاصه فاکتور</p>
+  <p>مدل ماشین : ${make}</p>
+  <p>سال ساخت : ${info.year}</p>
+  <p>نوع بیمه : ${level}</p>
+
+
+  <p class="total">قیمت نهایی : ${price}</p>
   
-  const div = document.createElement('div')
-  div.classList = 'error'
-  div.innerText = err
+  `
+  console.log(level)
 
-  // insert div to the form
-  form.insertBefore(div, document.querySelector('.form-group'))
+  // append div to the result
+  result.appendChild(div)
   
-  // remove error after 3second
-  setTimeout(() => {
-    document.querySelector('.error').remove()
-  }, 3000);
 
 
-
-}
-
-
-
-
-
+} 
